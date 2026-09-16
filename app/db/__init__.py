@@ -2,7 +2,7 @@ import aiosqlite
 import os
 import json
 
-DB_PATH = os.getenv("DATABASE_PATH", "/app/app/db/homelab.db")
+DB_PATH = os.getenv("DATABASE_PATH", "/app/data/homelab.db")
 
 def ensure_db_dir():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)

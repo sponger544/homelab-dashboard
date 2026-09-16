@@ -8,12 +8,10 @@ services:
     ports:
       - "8080:8000"
     volumes:
-      - ./data:/app/app/db        # SQLite database
-      - ./icons:/app/uploads/icons # Uploaded icons
-      # Mount Docker TLS certs if needed (optional)
-      # - /path/to/docker/certs:/app/certs:ro
+      - ./data:/app/data            # SQLite database (moved out of Python package)
+      - ./icons:/app/uploads/icons  # Uploaded icons
     environment:
-      - DATABASE_PATH=/app/app/db/homelab.db
+      - DATABASE_PATH=/app/data/homelab.db
     networks:
       - homelab
 

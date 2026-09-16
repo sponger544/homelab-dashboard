@@ -11,12 +11,11 @@ COPY app/ app/
 COPY run.py .
 COPY uploads/ uploads/
 
-# Create dirs
-RUN mkdir -p uploads/icons app/db
+# Create directories
+RUN mkdir -p uploads/icons data && chown -R appuser:appuser /app
 
-# Create non-root user
-RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
-USER appuser
+# Create non-root user (before chown, recreate)
+RUN useradd -m -u 1000 appuser 2>/dev/null || true
 
 EXPOSE 8000
 
