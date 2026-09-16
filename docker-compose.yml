@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  dashboard:
+    build: .
+    container_name: homelab-dashboard
+    restart: unless-stopped
+    ports:
+      - "8080:8000"
+    volumes:
+      - ./data:/app/app/db        # SQLite database
+      - ./icons:/app/uploads/icons # Uploaded icons
+      # Mount Docker TLS certs if needed (optional)
+      # - /path/to/docker/certs:/app/certs:ro
+    environment:
+      - DATABASE_PATH=/app/app/db/homelab.db
+    networks:
+      - homelab
+
+networks:
+  homelab:
+    driver: bridge

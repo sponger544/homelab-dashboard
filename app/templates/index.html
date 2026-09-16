@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home Lab Dashboard</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="top-bar">
+    <h1>Home Lab</h1>
+    <a href="/admin" class="admin-btn">Admin</a>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="stats">Stats</button>
+    <button class="tab" data-tab="internal">Internal</button>
+    <button class="tab" data-tab="external">External</button>
+  </div>
+
+  <!-- STATS TAB -->
+  <div class="tab-content active" id="stats">
+
+    <!-- Infrastructure -->
+    <div class="collapsible open">
+      <div class="collapsible-header">
+        <span>Infrastructure</span>
+        <span class="collapsible-arrow">▸</span>
+      </div>
+      <div class="collapsible-body">
+        <div class="collapsible-inner">
+          <div class="stats-grid" id="infrastructure-stats">
+            <div class="stat-card loading">
+              <div class="spinner"></div>
+              <div class="stat-sub">Loading...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Storage -->
+    <div class="collapsible">
+      <div class="collapsible-header">
+        <span>Storage</span>
+        <span class="collapsible-arrow">▸</span>
+      </div>
+      <div class="collapsible-body">
+        <div class="collapsible-inner">
+          <div id="storage-section">
+            <p class="empty-state">No storage mounts configured yet. Add them in Admin > Storage.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Proxmox VMs -->
+    <div class="collapsible">
+      <div class="collapsible-header">
+        <span>Proxmox VMs & CTs</span>
+        <span class="collapsible-arrow">▸</span>
+      </div>
+      <div class="collapsible-body">
+        <div class="collapsible-inner">
+          <div id="proxmox-vms-section">
+            <table>
+              <thead>
+                <tr><th>Name</th><th>Type</th><th>Node</th><th>Status</th><th>CPU</th><th>Memory</th></tr>
+              </thead>
+              <tbody id="proxmox-vms-body">
+                <tr><td colspan="6" class="loading-cell"><div class="spinner"></div> Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- INTERNAL TAB -->
+  <div class="tab-content" id="internal">
+    <div id="internal-links">
+      <p class="empty-state">No links yet. Add some in the Admin panel.</p>
+    </div>
+  </div>
+
+  <!-- EXTERNAL TAB -->
+  <div class="tab-content" id="external">
+    <div id="external-links">
+      <p class="empty-state">No links yet. Add some in the Admin panel.</p>
+    </div>
+  </div>
+
+  <!-- Docker Modal -->
+  <div class="modal-overlay" id="docker-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <span id="docker-modal-title">Docker Containers</span>
+        <button class="modal-close" onclick="closeModal('docker-modal')">✕</button>
+      </div>
+      <div id="docker-modal-body">
+        <div class="spinner"></div> Loading...
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>

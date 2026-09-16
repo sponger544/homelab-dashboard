@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.env
+.venv/
+
+# Database
+app/db/homelab.db
+*.db
+
+# Uploaded files (icons)
+uploads/icons/*
+!uploads/icons/.gitkeep
+
+# Docker
+.docker/

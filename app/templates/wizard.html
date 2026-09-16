@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home Lab Dashboard - Setup</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <div class="wizard-container">
+    <div class="wizard-title">Welcome to Home Lab Dashboard</div>
+    <div class="wizard-subtitle">Let's configure your data sources. Everything is stored in a local database.</div>
+
+    <div class="steps">
+      <div class="step active" data-step="1"></div>
+      <div class="step" data-step="2"></div>
+      <div class="step" data-step="3"></div>
+      <div class="step" data-step="4"></div>
+    </div>
+
+    <!-- STEP 1: Proxmox -->
+    <div class="step-panel active" data-step="1">
+      <div class="section-label">Proxmox Cluster</div>
+      <div class="section-desc">We'll use the Proxmox REST API to pull live VM status, resource usage, temperatures, and network stats. If you don't use Proxmox yet, leave blank.</div>
+
+      <div class="form-group">
+        <label class="form-label">Cluster API Endpoint</label>
+        <input class="form-input" type="text" id="proxmox-endpoint" placeholder="https://10.10.x.x:8006" />
+        <div class="help-text">Use any node in your cluster as the endpoint.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">API Token ID</label>
+        <input class="form-input" type="text" id="proxmox-token-id" placeholder="root@pam!homelab-dashboard" />
+        <div class="help-text">Datacenter → Permissions → API Tokens → Create</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">API Token Secret</label>
+        <input class="form-input" type="password" id="proxmox-token-secret" placeholder="••••••••••••••••••••••••" />
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="track-vms" checked />
+        <label for="track-vms">Track VMs and LXC containers</label>
+      </div>
+      <div class="checkbox-group">
+        <input type="checkbox" id="track-temps" checked />
+        <label for="track-temps">Track CPU temperature (host only)</label>
+      </div>
+
+      <div class="btn-row">
+        <div></div>
+        <button class="btn btn-primary" onclick="goToStep(2)">Next</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Docker -->
+    <div class="step-panel" data-step="2">
+      <div class="section-label">Docker Hosts</div>
+      <div class="section-desc">We'll check container status via the Docker Remote API. If you don't use Docker yet, you can skip this. Note: This requires Docker Remote API (port 2376) configured on each host.</div>
+
+      <div id="docker-hosts">
+        <div class="docker-host-entry">
+          <div style="font-size:13px;font-weight:500;margin-bottom:8px;">Host 1</div>
+          <div class="form-group">
+            <label class="form-label">Friendly Name</label>
+            <input class="form-input" type="text" placeholder="e.g. AI Server" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Host / IP</label>
+              <input class="form-input" type="text" placeholder="10.10.x.x" />
+            </div>
+            <div class="form-group" style="flex:0 0 80px;">
+              <label class="form-label">Port</label>
+              <input class="form-input" type="text" value="2376" />
+            </div>
+          </div>
+          <div class="checkbox-group">
+            <input type="checkbox" checked />
+            <label>Use TLS</label>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-ghost" onclick="addDockerHost()" style="margin-top:6px;margin-bottom:6px;">+ Add another Docker host</button>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goToStep(1)">Back</button>
+        <button class="btn btn-primary" onclick="goToStep(3)">Next</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Services -->
+    <div class="step-panel" data-step="3">
+      <div class="section-label">External Services</div>
+      <div class="section-desc">Add services for stats or integration. Leave empty to skip — you can add them later in the admin panel.</div>
+
+      <!-- Grafana -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;">
+        <div class="checkbox-group">
+          <input type="checkbox" id="use-grafana" onchange="toggleFields('grafana')" />
+          <label for="use-grafana">Enable Grafana integration</label>
+        </div>
+        <div id="grafana-fields" style="display:none;margin-top:8px;">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Grafana URL</label>
+              <input class="form-input" type="text" id="grafana-url" placeholder="http://10.10.x.x:3000" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">API Key</label>
+              <input class="form-input" type="password" id="grafana-api-key" placeholder="glss_..." />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Immich -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;">
+        <div class="checkbox-group">
+          <input type="checkbox" id="use-immich" onchange="toggleFields('immich')" />
+          <label for="use-immich">Enable Immich integration</label>
+        </div>
+        <div id="immich-fields" style="display:none;margin-top:8px;">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Immich URL</label>
+              <input class="form-input" type="text" id="immich-url" placeholder="http://10.10.x.x:2283" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">API Key</label>
+              <input class="form-input" type="password" id="immich-api-key" placeholder="••••••••••••••••" />
+            </div>
+          </div>
+          <div class="help-text">Generate in Immich: User Settings → API Keys</div>
+        </div>
+      </div>
+
+      <!-- NUT / UPS -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;">
+        <div class="checkbox-group">
+          <input type="checkbox" id="use-nut" onchange="toggleFields('nut')" />
+          <label for="use-nut">Enable NUT / UPS integration</label>
+        </div>
+        <div id="nut-fields" style="display:none;margin-top:8px;">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">NUT API URL (upsxmld)</label>
+              <input class="form-input" type="text" id="nut-url" placeholder="http://10.10.x.x:3493" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Device Name</label>
+              <input class="form-input" type="text" id="nut-device" value="ups" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Username</label>
+              <input class="form-input" type="text" id="nut-username" value="monuser" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input class="form-input" type="password" id="nut-password" placeholder="••••••" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goToStep(2)">Back</button>
+        <button class="btn btn-primary" onclick="generateSummary()">Review</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Summary -->
+    <div class="step-panel" data-step="4">
+      <div class="section-label">Review & Finish</div>
+      <div class="section-desc">Here's what we'll configure. You can always change this later in the Admin panel.</div>
+
+      <div id="summary-content">
+        <!-- Filled dynamically -->
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goToStep(3)">Back</button>
+        <button class="btn btn-primary" onclick="submitWizard()">Save & Start Dashboard</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/static/js/wizard.js"></script>
+</body>
+</html>
